@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "./Dropdown";
-import { IconHamburger, IconX } from "justd-icons"; // Ikon burger dan close
+import { IconDashboard, IconGear, IconHamburger, IconLogout, IconX } from "justd-icons"; // Ikon burger dan close
+import { motion } from "motion/react"
 
 export default function Navbar() {
     const location = useLocation();
@@ -11,6 +12,8 @@ export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(
         sessionStorage.getItem("isLoggedIn") === "true"
     );
+    const [ddDash, setDdDash] = useState(false)
+    const dropdownRef = useRef(null);
 
     const handleSetActive = (path) => {
         setActivePath(path);
@@ -33,10 +36,23 @@ export default function Navbar() {
         setActivePath(location.pathname);
     }, [location]);
 
+    const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setDdDash(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="border-b border-b-neutral-800">
+        <div className="border-b border-b-neutral-800 relative" ref={dropdownRef}>
             {/* Bagian Kiri: Brand atau Dropdown */}
-            <div className="container mx-auto flex flex-col lg:flex-row lg:items-center lg:px-12 py-2">
+            <div className="container mx-auto flex flex-col lg:flex-row lg:items-center px-4 lg:px-12 py-2 relative">
                 <div className="flex justify-between items-center lg:flex-1">
                     <Dropdown name="fahru_" />
                     {/* Tombol Mobile Menu */}
@@ -92,12 +108,49 @@ export default function Navbar() {
                     {/* Login & Register Buttons */}
                     <div className="flex flex-col lg:flex-row gap-2 lg:gap-x-2">
                         {isLoggedIn ? (
-                            <button
-                                onClick={handleLogout}
-                                className="rounded-[8px] inter-medium leading-[20px] text-white tracking-tighter text-[14px] px-3 py-2 bg-transparent border border-neutral-800 hover:bg-neutral-800 transition-all"
-                            >
-                                Logout
-                            </button>
+                            <div className="flex relative">
+                                <img
+                                    src="eyeball.jpg"
+                                    alt="Sultan"
+                                    className="cursor-pointer inline-block size-10 rounded-full border-2 border-neutral-700"
+                                    onClick={() => { setDdDash((prev) => !prev) }}
+                                />
+                                {/* Dd Dashboard */}
+                                {ddDash && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="absolute top-[55px] right-46 lg:right-0 min-w-48 rounded-lg h-fit bg-neutral-800 border border-neutral-700 flex flex-col"
+                                    >
+                                        <div className="text-[16px] tracking-tighter font-bold p-2 capitalize">
+                                            <span className="font-normal">Halo,</span> {sessionStorage.getItem("username")}!
+                                        </div>
+                                        <div className="w-full h-[1px] bg-neutral-700"></div>
+                                        <div className="p-1 flex flex-col gap-1">
+                                            <a href="#" className="flex gap-1.5 items-center transition-all hover:bg-blue-600 p-2 rounded-md font-medium">
+                                                <IconDashboard />
+                                                <span className="text-[14px] tracking-tighter">Dashboard</span>
+                                            </a>
+                                            <a href="#" className="flex gap-1.5 items-center hover:bg-blue-600 p-2 rounded-md font-medium">
+                                                <IconGear />
+                                                <span className="text-[14px] tracking-tighter">Pengaturan</span>
+                                            </a>
+                                        </div>
+                                        <div className="w-full h-[1px] bg-neutral-700"></div>
+                                        <div className="p-1 flex flex-col gap-1">
+                                            <button
+                                                className="flex gap-1.5 items-center transition-all hover:bg-red-800 p-2 rounded-md font-medium"
+                                                onClick={handleLogout}
+                                            >
+                                                <IconLogout />
+                                                <span className="text-[14px] tracking-tighter">Logout</span>
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
                         ) : (
                             <>
                                 <Link
@@ -118,6 +171,6 @@ export default function Navbar() {
                 </div>
 
             </div>
-        </div>
+        </div >
     );
 }
