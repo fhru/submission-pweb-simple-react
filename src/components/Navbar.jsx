@@ -110,9 +110,9 @@ export default function Navbar() {
                         {isLoggedIn ? (
                             <div className="flex relative">
                                 <img
-                                    src="eyeball.jpg"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/f/f3/%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9F%D1%83%D1%82%D0%B8%D0%BD_%2808-03-2024%29_%28cropped%29.jpg"
                                     alt="Sultan"
-                                    className="cursor-pointer inline-block size-10 rounded-full border-2 border-neutral-700"
+                                    className="cursor-pointer inline-block size-8 rounded-full border-2 border-neutral-700 object-cover object-center"
                                     onClick={() => { setDdDash((prev) => !prev) }}
                                 />
                                 {/* Dd Dashboard */}
